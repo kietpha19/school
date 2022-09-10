@@ -15,6 +15,7 @@ final class HttpRequest implements Runnable{
     @Override
     public void run() {
         try{
+            System.out.println("process request");
             processRequest();
         }catch (Exception e){
             System.out.println(e);
@@ -48,6 +49,7 @@ final class HttpRequest implements Runnable{
         tokens.nextToken(); //skip over the method, which should be "GET"
         String fileName = tokens.nextToken();
         //Because the browser precedes the filename with a slash, we prefix a dot so that the resulting pathname starts within the current directory.
+        fileName = "./src" + fileName;
 
         //open the requested file
         FileInputStream fileInputStream = null;
@@ -63,12 +65,14 @@ final class HttpRequest implements Runnable{
         String contentTypeLine = null;
         String entityBody = null;
         if (fileExists) {
-            statusLine = tokens.nextToken(); //????
-            contentTypeLine = "Content-type: " +
+            statusLine = "200 OK:"; //????
+            contentTypeLine = "content-type: " +
                     contentType( fileName ) + CRLF;
+            //content-type: text/html; charset=utf-8
         } else {
-            statusLine = CRLF; //?????
-            contentTypeLine = CRLF; //????
+            statusLine = "404 Not Found"; //?????
+            contentTypeLine = "content-type: text/html" + CRLF; //????
+
             entityBody = "<HTML>" +
                     "<HEAD><TITLE>Not Found</TITLE></HEAD>" +
                     "<BODY>Not Found</BODY></HTML>";
@@ -99,7 +103,7 @@ final class HttpRequest implements Runnable{
     private static String contentType(String fileName)
     {
         if(fileName.endsWith(".htm") || fileName.endsWith(".html")) {
-            return "text/html";
+            return "text/html;";
         }
 //        if() {
 //		?;
