@@ -1,5 +1,6 @@
 import java.io.*;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.security.cert.CRL;
 import java.util.StringTokenizer;
 
@@ -15,7 +16,7 @@ final class HttpRequest implements Runnable{
     @Override
     public void run() {
         try{
-            System.out.println("process request");
+            //System.out.println("process request");
             processRequest();
         }catch (Exception e){
             System.out.println(e);
@@ -65,8 +66,8 @@ final class HttpRequest implements Runnable{
         String contentTypeLine = null;
         String entityBody = null;
         if (fileExists) {
-            statusLine = "200 OK:" + CRLF; //????
-            contentTypeLine = "content-type: " +
+            statusLine = "HTTP/1.0 200 OK" + CRLF; //????
+            contentTypeLine = "Content-Type: " +
                     contentType( fileName ) + CRLF;
             //content-type: text/html; charset=utf-8
         } else {
@@ -78,10 +79,10 @@ final class HttpRequest implements Runnable{
                     "<BODY>Not Found</BODY></HTML>";
         }
         // Send the status line.
-        dataOutputStream.writeBytes(statusLine);
+        dataOutputStream.write(statusLine.getBytes());
 
         // Send the content type line.
-        dataOutputStream.writeBytes(contentTypeLine);
+        dataOutputStream.write(contentTypeLine.getBytes());
 
         // Send a blank line to indicate the end of the header lines.
         dataOutputStream.writeBytes(CRLF);
