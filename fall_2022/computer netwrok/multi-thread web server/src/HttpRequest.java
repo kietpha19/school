@@ -65,12 +65,12 @@ final class HttpRequest implements Runnable{
         String contentTypeLine = null;
         String entityBody = null;
         if (fileExists) {
-            statusLine = "200 OK:"; //????
+            statusLine = "200 OK:" + CRLF; //????
             contentTypeLine = "content-type: " +
                     contentType( fileName ) + CRLF;
             //content-type: text/html; charset=utf-8
         } else {
-            statusLine = "404 Not Found"; //?????
+            statusLine = "404 Not Found" + CRLF; //?????
             contentTypeLine = "content-type: text/html" + CRLF; //????
 
             entityBody = "<HTML>" +
@@ -93,7 +93,7 @@ final class HttpRequest implements Runnable{
         } else {
             dataOutputStream.writeBytes(entityBody);
         }
-
+        dataOutputStream.flush();
         //close the streams and socket
         dataOutputStream.close();
         bufferedReader.close();
@@ -115,7 +115,7 @@ final class HttpRequest implements Runnable{
     }
 
 
-    private static void sendBytes(FileInputStream fis, OutputStream os)
+    private static void sendBytes(FileInputStream fis, DataOutputStream os)
             throws Exception
     {
         // Construct a 1K buffer to hold bytes on their way to the socket.
