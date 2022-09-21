@@ -6,8 +6,8 @@ import java.util.StringTokenizer;
 
 final class HttpRequest implements Runnable{
 
-    final static String CRLF = "\r\n";
-    final static String http_version = "HTTP/1.0 ";
+    final static String CRLF = "\r\n"; //the end of line
+    final static String http_version = "HTTP/1.0 "; //http version
     Socket socket;
 
     //constructor
@@ -55,7 +55,7 @@ final class HttpRequest implements Runnable{
         tokens.nextToken(); //skip over the method, which should be "GET"
         String fileName = tokens.nextToken();
 
-
+        //this hashest stored availabe file (.html, .pgn, etc) available to be fetched
         HashSet<String> pages = getAvailablePages();
         String statusLine = getStatusLine(pages, fileName);
         if(statusLine == "404 Not Found"){
@@ -73,6 +73,7 @@ final class HttpRequest implements Runnable{
         socket.close();
     }
 
+    //this function is used to fetch a html file
     private static void fetch_page(String statusLine, String fileName, DataOutputStream dataOutputStream) throws IOException {
         FileInputStream fileInputStream = null;
         if(statusLine == "200 OK"){
@@ -103,6 +104,7 @@ final class HttpRequest implements Runnable{
         fileInputStream.close();
     }
 
+    //this function is fetching a simple "Not Found" webpage
     private static void fetchNotFound(DataOutputStream dataOutputStream) {
         String statusLine = http_version + "404 Not Found" + CRLF;
         String contentTypeLine = "Content-Type: text/html" + CRLF;
@@ -121,6 +123,7 @@ final class HttpRequest implements Runnable{
         }
     }
 
+    //this function checking if a file name is availble (200), if it is moved permanently (301), or not found (404)
     private static String getStatusLine(HashSet<String> pages, String fileName){
         if(fileName.equals("/index.html")){
             return "301 Moved Permanently";
@@ -150,10 +153,13 @@ final class HttpRequest implements Runnable{
         if(fileName.endsWith(".htm") || fileName.endsWith(".html")) {
             return "text/html";
         }
+        if(fileName.endsWith(".png") || fileName.endsWith(".jpeg")){
+            return "image/apng";
+        }
         return "application/octet-stream";
     }
 
-    //this function take all content from file and write it into a DataOutputStream
+    //this function take all content from file and write it into a DataOutputStream (in binary)
     private static void sendBytes(FileInputStream fis, DataOutputStream os)
             throws Exception
     {
