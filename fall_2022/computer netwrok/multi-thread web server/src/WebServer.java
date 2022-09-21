@@ -20,3 +20,6 @@ public class WebServer {
         }
     }
 }
+/*
+* refererence: https://www2.seas.gwu.edu/~cheng/6431/Projects/Project1WebServer/webserver.html?fbclid=IwAR3hFQA70zg9kbLhoU1kepyDm5UTHXSHc8MeeW4AsZLj6dAuVfFkpXvDalA
+* */
