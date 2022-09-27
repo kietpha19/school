@@ -14,6 +14,7 @@ final class HttpRequest implements Runnable{
     public HttpRequest(Socket socket) throws Exception{
         this.socket = socket;
     }
+    //this function calling a function to handle a http request
     @Override
     public void run() {
         try{
@@ -24,6 +25,7 @@ final class HttpRequest implements Runnable{
         }
     }
 
+    //this function handle the http request
     private void processRequest() throws Exception{
         //create an outputSTream from the socket
         DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
@@ -57,12 +59,13 @@ final class HttpRequest implements Runnable{
 
         //this hashest stored availabe file (.html, .pgn, etc) available to be fetched
         HashSet<String> pages = getAvailablePages();
+        //checking if the fileName is in the hashset and set the status line
         String statusLine = getStatusLine(pages, fileName);
-        if(statusLine == "404 Not Found"){
+        if(statusLine == "404 Not Found"){ //if the file name is not found, then the status line is "404 Not Found"
             fetchNotFound(dataOutputStream);
         }
         else{
-            fetch_page(statusLine, fileName, dataOutputStream);
+            fetch_page(statusLine, fileName, dataOutputStream); //otherwise, fetch the html file
         }
 
 
@@ -81,7 +84,7 @@ final class HttpRequest implements Runnable{
             fileName = "./src/pages" + fileName;
         }
         else if(statusLine == "301 Moved Permanently"){
-            fileName = "./src/pages/home.html";
+            fileName = "./src/pages/home.html"; //path to the file name that being moved permanently
         }
         //open the requested file
         try {
@@ -89,8 +92,11 @@ final class HttpRequest implements Runnable{
         }catch (FileNotFoundException e){
             fetchNotFound(dataOutputStream);
         }
+        //build the status line
         statusLine = http_version + statusLine + CRLF;
+        //build the content type line
         String contentTypeLine = "Content-Type: " + contentType( fileName ) + CRLF;
+        //write data to data output stream
         try {
             dataOutputStream.writeBytes(statusLine);
             dataOutputStream.writeBytes(contentTypeLine);
@@ -101,6 +107,7 @@ final class HttpRequest implements Runnable{
         catch (Exception e){
             fetchNotFound(dataOutputStream);
         }
+        //close the input stream
         fileInputStream.close();
     }
 
@@ -109,6 +116,7 @@ final class HttpRequest implements Runnable{
         String statusLine = http_version + "404 Not Found" + CRLF;
         String contentTypeLine = "Content-Type: text/html" + CRLF;
 
+        //html code for a simple "not found" page
         String entityBody = "<HTML>" +
                     "<HEAD><TITLE>Not Found</TITLE></HEAD>" +
                     "<BODY>Not Found</BODY></HTML>";
@@ -123,7 +131,8 @@ final class HttpRequest implements Runnable{
         }
     }
 
-    //this function checking if a file name is availble (200), if it is moved permanently (301), or not found (404)
+    //this function checking file name adn return corresponded http code.
+    // if it is available code(200), if it is moved permanently (301), or not found (404)
     private static String getStatusLine(HashSet<String> pages, String fileName){
         if(fileName.equals("/index.html")){
             return "301 Moved Permanently";
@@ -134,12 +143,14 @@ final class HttpRequest implements Runnable{
         return "404 Not Found";
     }
 
-    //this function return a hashset that contain all available file name that can be fetched from GET funtion in http
+    //this function return a hashset that contain all available file name that can be fetched from GET function in http request
     private static HashSet<String> getAvailablePages(){
         HashSet<String> pages = new HashSet<>();
+        //go to the directory "pages"
         String path_name = System.getProperty("user.dir") + "/src/pages";
         File dir_pages = new File(path_name);
         File[] files = dir_pages.listFiles();
+        //loop through the directory and get all the files
         for(File file : files){
             pages.add("/" + file.getName());
         }
