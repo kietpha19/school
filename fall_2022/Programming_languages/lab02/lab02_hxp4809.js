@@ -30,7 +30,7 @@ console.log();
 
 //task 3 - for this task, we are assuming the range is always (0,100)
 const isOdd = x => x%2==1;
-//using recursive
+//using recursion
 function get_odd_in_multFive(start, end, count){
     if(start > end){
         return;
@@ -54,7 +54,8 @@ function get_odd_in_multFive_list(start, end, result){
         return result;
     }
     else if (isOdd(start)){
-        result.push(start);
+        //again, concate is an pure function, so there is no side effect
+        return get_odd_in_multFive_list(start+5, end, result.concat([start]));
     }
     return get_odd_in_multFive_list(start+5, end, result);
 }
@@ -66,7 +67,7 @@ console.log();
 //task 3 if use map and filter
 const add = x => y => x+y;
 const add10 = add(10);
-//concat is a pure function, so it gurantees that there is not side effect
+//concat is a pure function, so it gurantees that there is no side effect
 const inputtable_fix = inputtable.concat(inputtable.map(add10)); 
 const fiveTable_task3 = inputtable_fix.map(mult5);
 const odd_in_fiveTable = fiveTable_task3.filter(isOdd);
@@ -143,7 +144,7 @@ function get_even_or_odd_in_multNum_table(start, end, mult_num, cond, result){
     }
     return recursion(start- (start%mult_num) + mult_num);
 }
-const result = get_even_or_odd_in_multNum_table(0,100,5,isOdd,[]);
+const result = get_even_or_odd_in_multNum_table(start,end,mult_num,isOdd,[]);
 console.log(result);
 
 
