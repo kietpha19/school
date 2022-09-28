@@ -112,14 +112,34 @@ console.log(cylinder_volume(5)(11));
 console.log();
 
 //task 6
-makeTag = function(beginTag, endTag){ 
+const makeTag = function(beginTag, endTag){ 
     return function(textcontent){ 
        return beginTag +textcontent +endTag; 
     } 
 } 
+const makeTag_table = makeTag("<table>\n", "</table>\n");
+const makeTag_tr = makeTag("<tr>\n", "</tr>\n");
+const makeTag_th = makeTag("<th>", "</th>\n");
+const makeTag_td = makeTag("<td>", "</td>\n");
+
+const head1 = makeTag_th("FirstName");
+const head2 = makeTag_th("LastName");
+const head3 = makeTag_th("Age");
+const table_header = makeTag_tr(head1+head2+head3);
+
+const person1 = makeTag_td("Hailey") + makeTag_td("Nguyen") + makeTag_td("21");
+const row1 = makeTag_tr(person1);
+
+const person2 = makeTag_td("Dania") + makeTag_td("Mendez") + makeTag_td("18");
+const row2 = makeTag_tr(person2);
+
+const person3 = makeTag_td("Jasmine") + makeTag_td("Luu") + makeTag_td("23");
+const row3 = makeTag_tr(person3);
+
+const html_table = makeTag_table(table_header + row1 + row2 + row3);
+
 console.log("task 6: ");
-console.log(makeTag("<html>", "<html>")("hello"));
-console.log();
+console.log(html_table);
 
 
 //bonus: genetic version of task 3 and 4
