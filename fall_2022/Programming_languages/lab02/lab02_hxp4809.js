@@ -97,6 +97,7 @@ console.log();
 //task 4 if use map, filter and reduce
 const sevenTabe = inputtable_fix.map(mult(7));
 const even_in_senvenTable = sevenTabe.filter(x => (isEven(x) && x<100));
+console.log(even_in_senvenTable);
 const sum_even_in_sevenTable = even_in_senvenTable.reduce((a,b)=>a+b);
 console.log("task 4 using map, filter, and reduce");
 console.log(sum_even_in_sevenTable);
@@ -105,10 +106,11 @@ console.log();
 
 //task 5
 const cylinder_volume = r => h => 3.14*r*r*h;
+const cylinder_volume_rad5 = cylinder_volume(5);
 console.log("task 5: ")
-console.log(cylinder_volume(5)(10));
-console.log(cylinder_volume(5)(17));
-console.log(cylinder_volume(5)(11));
+console.log(cylinder_volume_rad5(10));
+console.log(cylinder_volume_rad5(17));
+console.log(cylinder_volume_rad5(11));
 console.log();
 
 //task 6
@@ -124,27 +126,43 @@ console.log();
 
 //bonus: genetic version of task 3 and 4
 
-//for grader to choose different multiplier and range
-const mult_num = 3; 
+//for grader to choose different multiplier, range, and condition
+const mult_num = 9; 
 const start = 0;
 const end = 100;
-const even = 0;
-const odd = 1;
+const cond = isOdd; //can be replaced by isOdd
 
 //task 3 - genetic version
 function get_even_or_odd_in_multNum_table(start, end, mult_num, cond, result){
-    function recursion(s){
+    function recursion(s, res){
         if(s > end){
-            return result;
+            return res;
         }
         else if (cond(s)){
-            result.push(s);
+            return recursion(s+mult_num, res.concat([s]));
         }
-        return recursion(s+mult_num);
+        return recursion(s+mult_num, res);
     }
-    return recursion(start- (start%mult_num) + mult_num);
+    return recursion(start- (start%mult_num) + mult_num, result);
 }
-const result = get_even_or_odd_in_multNum_table(start,end,mult_num,isOdd,[]);
-console.log(result);
+console.log("extra credit: ")
+const even_or_odd_in_multNum_table = get_even_or_odd_in_multNum_table(start,end,mult_num,cond,[]);
+console.log(even_or_odd_in_multNum_table);
+
+//task 4 - genetic version
+function get_sum_even_or_odd_in_multNum_table(start, end, mult_num, cond, result){
+    function recursion(s, res){
+        if(s > end){
+            return res;
+        }
+        else if (cond(s)){
+            return recursion(s+mult_num, res+s);
+        }
+        return recursion(s+mult_num, res);
+    }
+    return recursion(start- (start%mult_num) + mult_num, result);
+}
+const sum_even_or_odd_in_multNum_table = get_sum_even_or_odd_in_multNum_table(start,end,mult_num,cond,0);
+console.log(sum_even_or_odd_in_multNum_table);
 
 
