@@ -94,7 +94,14 @@ class Graph:
         self.print_route(route_map, original_city, destination)
     
     
-    def path_search(self, origin_city, destination):
+    def path_search(self, origin_city, destination, informed_search):
+        if origin_city not in self.edges:
+            print("there is no city name: ", origin_city)
+            return
+        if destination not in self.edges:
+            print("there is no city name: ", destination)
+            return
+
         #node = [distance, city_name]
         nodes_popped = 0
         nodes_expanded = 0
@@ -102,14 +109,20 @@ class Graph:
         closed = set()
         pre_map = {}
         heap = [] #priority queue - min heap
-        heapq.heappush(heap, [0, origin_city])
+        if(informed_search):
+            heapq.heappush(heap, [self.heuristic[origin_city], origin_city])
+        else:
+            heapq.heappush(heap, [0, origin_city])
 
         while heap:
             node = heapq.heappop(heap)
             nodes_popped +=1
 
-            distance = node[0]
             city_name = node[1]
+            if(informed_search):
+                distance = node[0] - self.heuristic[city_name]
+            else:
+                distance = node[0]
 
             if(city_name == destination):
                 self.print_result(pre_map, origin_city, destination, distance, nodes_popped, nodes_expanded, nodes_generated)
@@ -118,9 +131,12 @@ class Graph:
                 closed.add(city_name)
                 nodes_expanded +=1
                 for node in self.edges[city_name]:
-                    d = node[0]
                     v = node[1]
-                    new_node = [distance + d, v]
+                    d = node[0]
+                    if(informed_search):
+                        new_node = [distance + d + self.heuristic[v], v]
+                    else:
+                        new_node = [distance + d, v]
                     heapq.heappush(heap, new_node)
                     nodes_generated +=1
                     if v not in pre_map:
@@ -141,7 +157,7 @@ class Solution:
 
     def __init__(self):
         self.process_input()
-        self.g.path_search(self.input.origin_city, self.input.destination_city)
+        self.g.path_search(self.input.origin_city, self.input.destination_city, self.input.informed_search)
         
 
     def process_input(self):
