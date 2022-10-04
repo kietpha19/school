@@ -1,3 +1,4 @@
+from dis import dis
 import sys
 import heapq
 
@@ -18,12 +19,13 @@ class Input:
         for line in Lines:
             if(line != "END OF INPUT"):
                 line = line.split()
-                heuristic[line[0]] = line[1]
+                heuristic[line[0]] = float(line[1])
             else:
                 file.close()
                 return
     
-    def process_inputFile(self, edges, city_idx, idx_city, num_cities):
+    def process_inputFile(self, edges):
+        num_cities = 0
         file = open(self.input_fileName)
         if not file:
             return
@@ -35,73 +37,102 @@ class Input:
                 return num_cities
             else:
                 line = line.split()
-                if line[0] not in city_idx:
-                    city_idx[line[0]] = num_cities
-                    idx_city[num_cities] = line[0]
-                    num_cities += 1
-                if line[1] not in city_idx:
-                    city_idx[line[1]] = num_cities
-                    idx_city[num_cities] = line[1]
-                    num_cities += 1
-                if line[0] not in edges:
-                    edges[line[0]] = [[line[1], line[2]]]
+                v1 = line[0]
+                v2 = line[1]
+                d = float(line[2])
+                if v1 not in edges:
+                    edges[v1] = [[d, v2]]
+                    num_cities +=1
                 else:
-                    edges[line[0]].append([line[1], line[2]])
+                    edges[v1].append([d, v2])
+                if v2 not in edges:
+                    edges[v2] = [[d, v1]]
+                    num_cities +=1
+                else:
+                    edges[v2].append([d, v1])
     
 
 class Graph:
     num_cities = 0
-    #two hashmaps to map between city and idx in the 2d matrix
-    city_idx = {}
-    idx_city = {}
-    #later use this map to build the 2d matrix - find away to improve this
     edges = {}
     heuristic = {}
-    matrix = []
 
-    def build_matrix(self, n):
-        self.matrix = [[-1]*n for i in range(n)]
-        for city in self.edges:
-            i = self.city_idx[city]
-            self.matrix[i][i] = 0 #the city map to itself
-            for connected_city in self.edges[city]:
-                j = self.city_idx[connected_city[0]]
-                d = connected_city[1]
-                self.matrix[i][j] = int(d)
-                self.matrix[j][i] = int(d)
+    def print_route(self, pre_map, original_city, destination):
+        path = []
+        v = destination
+        while v != original_city:
+            path.append(v)
+            v = pre_map[v][1]
+        
+        pre_d = 0
+        for i in range(len(path)-1, -1, -1):
+            v = path[i]
+            pre_v = pre_map[v][1]
+            d = pre_map[v][0] - pre_d
+            pre_d += d
+            print(pre_v , "to",  v, ",", d, "km")
+        
+        
+
+    def print_result(self, route_map, original_city, destination, distance, nodes_popped, nodes_expanded, nodes_generated):
+        print("nodes popped: " , nodes_popped)
+        print("nodes expanded: " , nodes_expanded)
+        print("nodes generated: " , nodes_generated)
+
+        if distance == -1:
+            print("distance: infinity")
+            print("route: ")
+            print("None")
+            return
+        if distance == 0:
+            print(original_city, "to ", original_city, ", 0.0 km")
+            return
+        
+        print("distance: ", distance, "km")
+        print("Route: ")
+        #print(route_map)
+        self.print_route(route_map, original_city, destination)
     
-
+    
     def path_search(self, origin_city, destination):
-        #node = [distance, city_name, prev_city_name]
+        #node = [distance, city_name]
+        nodes_popped = 0
         nodes_expanded = 0
         nodes_generated = 1
         closed = set()
+        pre_map = {}
         heap = [] #priority queue - min heap
-        heapq.heappush(heap, [0, origin_city, "None"])
+        heapq.heappush(heap, [0, origin_city])
 
         while heap:
             node = heapq.heappop(heap)
-            nodes_expanded +=1
+            nodes_popped +=1
 
             distance = node[0]
             city_name = node[1]
+
             if(city_name == destination):
-                print(nodes_expanded)
-                print(nodes_generated)
-                return distance
+                self.print_result(pre_map, origin_city, destination, distance, nodes_popped, nodes_expanded, nodes_generated)
+                return
             if city_name not in closed:
                 closed.add(city_name)
-                i = self.city_idx[city_name]
-                #find a way to have this in separated function
-                for j in range(self.num_cities):
-                    d = self.matrix[i][j]
-                    if d > 0:
-                        heapq.heappush(heap, [distance + d, self.idx_city[j], city_name])
-                        nodes_generated +=1
-        
-        print(nodes_expanded)
-        print(nodes_generated)
-        return -1
+                nodes_expanded +=1
+                for node in self.edges[city_name]:
+                    d = node[0]
+                    v = node[1]
+                    new_node = [distance + d, v]
+                    heapq.heappush(heap, new_node)
+                    nodes_generated +=1
+                    if v not in pre_map:
+                        pre_map[v] = [distance + d,city_name]
+                    else:
+                        path = pre_map[v]
+                        if distance + d < path[0]:
+                            pre_map[v] = [distance + d, city_name]
+
+        distance = -1
+        self.print_result(pre_map, origin_city, destination, distance, nodes_popped, nodes_expanded, nodes_generated)
+        return
 
 
 class Solution:
@@ -110,14 +141,14 @@ class Solution:
 
     def __init__(self):
         self.process_input()
-        self.g.build_matrix(self.g.num_cities)
-        print(self.g.path_search(self.input.origin_city, self.input.destination_city))
+        self.g.path_search(self.input.origin_city, self.input.destination_city)
+        
 
     def process_input(self):
         if(self.input.informed_search):
             self.input.process_heuristic(self.g.heuristic)
         #can't pass by reference as an int in python, so this is a work around to update num_cities
-        self.g.num_cities = self.input.process_inputFile(self.g.edges, self.g.city_idx, self.g.idx_city, self.g.num_cities)
+        self.g.num_cities = self.input.process_inputFile(self.g.edges)
 
 
 s = Solution()
