@@ -5,14 +5,15 @@
 # Written to be Python 2.4 compatible for omega
 
 import sys
-from MaxConnect4Game_sample import *
+from MaxConnect4Game import *
+from Agent import *
 
-def oneMoveGame(currentGame):
+def oneMoveGame(currentGame, depth):
     if currentGame.pieceCount == 42:    # Is the board full already?
         print('BOARD FULL\n\nGame Over!\n')
         sys.exit(0)
 
-    currentGame.aiPlay() # Make a move (only random is implemented)
+    currentGame.aiPlay(depth) # Make a move (only random is implemented)
 
     print( 'Game state after move:')
     currentGame.printGameBoard()
@@ -71,11 +72,12 @@ def main(argv):
     else: # game_mode == 'one-move'
         # Set up the output file
         outFile = argv[3]
+        depth = argv[4]
         try:
             currentGame.gameFile = open(outFile, 'w')
         except:
             sys.exit('Error opening output file.')
-        oneMoveGame(currentGame) # Be sure to pass any other arguments from the command line you might need.
+        oneMoveGame(currentGame, depth) # Be sure to pass any other arguments from the command line you might need.
 
 
 if __name__ == '__main__':

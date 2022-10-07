@@ -4,9 +4,10 @@
 # code provided by Vassilis Athitsos
 # Written to be Python 2.4 compatible for omega
 
-from copy import copy
+from copy import copy, deepcopy
 import random
 import sys
+from Agent import *
 
 class maxConnect4Game:
     def __init__(self):
@@ -26,9 +27,9 @@ class maxConnect4Game:
     def printGameBoard(self):
         print( ' -----------------')
         for i in range(6):
-            print( ' |')
+            print( ' |', end=" ")
             for j in range(7):
-                print('%d' % self.gameBoard[i][j]),
+                print('%d' % self.gameBoard[i][j], end=" ")
             print( '| ')
         print( ' -----------------')
 
@@ -47,18 +48,21 @@ class maxConnect4Game:
                     self.pieceCount += 1
                     return 1
 
+
     # The AI section. Currently plays randomly.
-    def aiPlay(self):
+    def aiPlay(self, depth):
+        agent = Agent( deepcopy(self.gameBoard), self.currentTurn, depth)
+        agent_column = agent.predict()
+        print("agent column: ", agent_column)
+
         randColumn = random.randrange(0,7)
         result = self.playPiece(randColumn)
         if not result:
             self.aiPlay()
         else:
-            print('\n\nmove %d: Player %d, column %d\n' % (self.pieceCount, self.currentTurn, randColumn+1))
-            if self.currentTurn == 1:
-                self.currentTurn = 2
-            elif self.currentTurn == 2:
-                self.currentTurn = 1
+            print('\n\nmove %d: Player %d, column %d\n' % (self.pieceCount, self.currentTurn, randColumn+1))     
+            #update current turn
+            self.currentTurn = (self.currentTurn%2) + 1
 
     # Calculate the number of 4-in-a-row each player has
     def countScore(self):
