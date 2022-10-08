@@ -4,32 +4,75 @@
 # code provided by Dr. Vassilis Athitsos
 # Written to be Python 2.4 compatible for omega
 
+from cmath import inf
 import sys
 from MaxConnect4Game import *
-from Agent import *
 
-def oneMoveGame(currentGame, depth):
+def print_currentGame(currentGame):
+    currentGame.printGameBoard()
+    # Update a few game variables based on initial state and print the score
+    currentGame.checkPieceCount()
+    currentGame.countScore()
+    print('Score: Player 1 = %d, Player 2 = %d\n' % (currentGame.player1Score, currentGame.player2Score))
+
     if currentGame.pieceCount == 42:    # Is the board full already?
         print('BOARD FULL\n\nGame Over!\n')
         sys.exit(0)
 
+def oneMoveGame(currentGame, depth):
+    currentGame.process_input_file()
+    currentGame.gameInFile.close()
+    
+    print ('Game state before move:')
+    print_currentGame(currentGame)
+
     currentGame.aiPlay(depth) # Make a move (only random is implemented)
 
-    print( 'Game state after move:')
-    currentGame.printGameBoard()
-
-    currentGame.countScore()
-    print('Score: Player 1 = %d, Player 2 = %d\n' % (currentGame.player1Score, currentGame.player2Score))
-
     currentGame.printGameBoardToFile()
-    currentGame.gameFile.close()
+    currentGame.gameOutFile.close()
+
+    print( 'Game state after move:')
+    print_currentGame(currentGame)
 
 
-def interactiveGame(currentGame):
-    # Fill me in
-    sys.exit('Interactive mode is currently not implemented')
+def interactiveGame(currentGame, next_player, depth):
+    print_currentGame(currentGame)
 
+    if next_player == "computer-next":
+        print("AI play")
+        currentGame.aiPlay(depth)
+        
+        try:
+            currentGame.gameOutFile = open("computer.txt", 'w')
+        except:
+            sys.exit('Error opening output file.')
+        currentGame.printGameBoardToFile()
+        currentGame.gameOutFile.close()
 
+        interactiveGame(currentGame, "human-next", depth)
+    
+    else: #next_player == "human-next"
+        c = input("pick a column: ")
+        if c == 'q':
+            sys.exit(0)
+        else:
+            c = int(c)
+        while(c<1 or c>7 or currentGame.playPiece(c-1) == None):
+            c = int(input("in valid move, try again: "))
+        
+        try:
+            currentGame.gameOutFile = open("human.txt", 'w')
+        except:
+            sys.exit('Error opening output file.')
+        print('move %d: Player %d, column %d' %(currentGame.pieceCount, currentGame.currentTurn, c))
+
+        currentGame.currentTurn = (currentGame.currentTurn%2) + 1
+        currentGame.printGameBoardToFile()
+        currentGame.gameOutFile.close()
+ 
+        interactiveGame(currentGame, "computer-next", depth)
+
+    
 def main(argv):
     # Make sure we have enough command-line arguments
     if len(argv) != 5:
@@ -45,38 +88,38 @@ def main(argv):
         sys.exit(2)
 
     currentGame = maxConnect4Game() # Create a game
-
-    # Try to open the input file
-    try:
-        currentGame.gameFile = open(inFile, 'r')
-    except IOError:
-        sys.exit("\nError opening input file.\nCheck file name.\n")
-
-    # Read the initial game state from the file and save in a 2D list
-    file_lines = currentGame.gameFile.readlines()
-    currentGame.gameBoard = [[int(char) for char in line[0:7]] for line in file_lines[0:-1]]
-    currentGame.currentTurn = int(file_lines[-1][0])
-    currentGame.gameFile.close()
-
     print ('\nMaxConnect-4 game\n')
-    print ('Game state before move:')
-    currentGame.printGameBoard()
-
-    # Update a few game variables based on initial state and print the score
-    currentGame.checkPieceCount()
-    currentGame.countScore()
-    print('Score: Player 1 = %d, Player 2 = %d\n' % (currentGame.player1Score, currentGame.player2Score))
 
     if game_mode == 'interactive':
-        interactiveGame(currentGame) # Be sure to pass whatever else you need from the command line
-    else: # game_mode == 'one-move'
-        # Set up the output file
-        outFile = argv[3]
-        depth = argv[4]
+        next_player = argv[3]
+        if next_player != "computer-next" and next_player != "human-next":
+            print('%s is an unrecognized next player' % next_player)
+            sys.exit(2)
+
         try:
-            currentGame.gameFile = open(outFile, 'w')
+            currentGame.gameInFile = open(inFile, 'r')
+            currentGame.process_input_file()
+            currentGame.gameInFile.close()
+        except:
+            print("file read errors, start new game")
+        depth = int(argv[4])
+        interactiveGame(currentGame, next_player, depth) # Be sure to pass whatever else you need from the command line
+    
+    else: # game_mode == 'one-move'
+        #try open the input file
+        try:
+            currentGame.gameInFile = open(inFile, 'r')
+        except IOError:
+            sys.exit("\nError opening input file.\nCheck file name.\n")
+            
+        #try open the output file
+        outFile = argv[3]
+        try:
+            currentGame.gameOutFile = open(outFile, 'w')
         except:
             sys.exit('Error opening output file.')
+
+        depth = int(argv[4])
         oneMoveGame(currentGame, depth) # Be sure to pass any other arguments from the command line you might need.
 
 

@@ -16,8 +16,9 @@ class maxConnect4Game:
         self.player1Score = 0
         self.player2Score = 0
         self.pieceCount = 0
-        self.gameFile = None
-        random.seed()
+        self.gameInFile = None
+        self.gameOutFile = None
+        #random.seed()
 
     # Count the number of pieces already played
     def checkPieceCount(self):
@@ -33,11 +34,19 @@ class maxConnect4Game:
             print( '| ')
         print( ' -----------------')
 
+    #process the input file
+    def process_input_file(self):
+        # Read the initial game state from the file and save in a 2D list
+        file_lines = self.gameInFile.readlines()
+        self.gameBoard = [[int(char) for char in line[0:7]] for line in file_lines[0:-1]]
+        self.currentTurn = int(file_lines[-1][0])
+        self.gameInFile.close()
+
     # Output current game status to file
     def printGameBoardToFile(self):
         for row in self.gameBoard:
-            self.gameFile.write(''.join(str(col) for col in row) + '\r\n')
-        self.gameFile.write('%s\r\n' % str(self.currentTurn))
+            self.gameOutFile.write(''.join(str(col) for col in row) + '\r\n')
+        self.gameOutFile.write('%s' % str(self.currentTurn))
 
     # Place the current player's piece in the requested column
     def playPiece(self, column):
@@ -47,20 +56,30 @@ class maxConnect4Game:
                     self.gameBoard[i][column] = self.currentTurn
                     self.pieceCount += 1
                     return 1
+    
+    #make a copy of the current game
+    def make_a_copy(self):
+        copy_game = maxConnect4Game()
+        copy_game.gameBoard = deepcopy(self.gameBoard)
+        copy_game.currentTurn = self.currentTurn
+        copy_game.player1Score = self.player1Score
+        copy_game.player2Score = self.player2Score
+        copy_game.pieceCount = self.pieceCount
+        return copy_game
 
 
     # The AI section. Currently plays randomly.
     def aiPlay(self, depth):
-        agent = Agent( deepcopy(self.gameBoard), self.currentTurn, depth)
+        test_game = self.make_a_copy()
+        agent = Agent(test_game, depth)
         agent_column = agent.predict()
-        print("agent column: ", agent_column)
-
+       
         randColumn = random.randrange(0,7)
-        result = self.playPiece(randColumn)
+        result = self.playPiece(agent_column)
         if not result:
-            self.aiPlay()
+            self.aiPlay(depth)
         else:
-            print('\n\nmove %d: Player %d, column %d\n' % (self.pieceCount, self.currentTurn, randColumn+1))     
+            print('\n\nmove %d: Player %d, column %d\n' % (self.pieceCount, self.currentTurn, agent_column+1))     
             #update current turn
             self.currentTurn = (self.currentTurn%2) + 1
 
