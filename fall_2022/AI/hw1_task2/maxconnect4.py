@@ -2,7 +2,8 @@
 
 # Written by Chris Conly based on C++
 # code provided by Dr. Vassilis Athitsos
-# Written to be Python 2.4 compatible for omega
+# Originally, written to be Python 2.4 compatible for omega
+# Modified by student, Hoang Anh Kiet PHam, to be Python 3.8.10 compatible for omage
 
 from cmath import inf
 import sys
@@ -26,7 +27,7 @@ def oneMoveGame(currentGame, depth):
     print ('Game state before move:')
     print_currentGame(currentGame)
 
-    currentGame.aiPlay(depth) # Make a move (only random is implemented)
+    currentGame.aiPlay(depth) # Make a move
 
     currentGame.printGameBoardToFile()
     currentGame.gameOutFile.close()
@@ -58,7 +59,11 @@ def interactiveGame(currentGame, next_player, depth):
         else:
             c = int(c)
         while(c<1 or c>7 or currentGame.playPiece(c-1) == None):
-            c = int(input("in valid move, try again: "))
+            c = input("in valid move, try again: ")
+            if c == 'q':
+                sys.exit(0)
+            else:
+                c = int(c)
         
         try:
             currentGame.gameOutFile = open("human.txt", 'w')
@@ -95,7 +100,7 @@ def main(argv):
         if next_player != "computer-next" and next_player != "human-next":
             print('%s is an unrecognized next player' % next_player)
             sys.exit(2)
-
+        #try process the input file
         try:
             currentGame.gameInFile = open(inFile, 'r')
             currentGame.process_input_file()

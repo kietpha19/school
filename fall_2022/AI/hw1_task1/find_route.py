@@ -29,7 +29,7 @@ class Input:
     
     '''
     edges is representation of graph, using hashmap with key is the vertext,
-    and value is and array of [distance, connected_vertex]
+    and value is and array of [[distance, connected_vertex]]
     '''
     def process_inputFile(self, edges):
         num_cities = 0
@@ -134,6 +134,7 @@ class Graph:
             nodes_popped +=1
 
             city_name = node[1]
+            #calculate the REAL distance from origin city to CURRENT searched city
             if(informed_search):
                 distance = node[0] - self.heuristic[city_name]
             else:
@@ -149,7 +150,7 @@ class Graph:
 
                 #scan over the node successors
                 for node in self.edges[city_name]:
-                    v = node[1] #vertex/city
+                    v = node[1] #vertex/city name
                     d = node[0] #distance
 
                     #creating new node
@@ -168,6 +169,7 @@ class Graph:
                         pre_map[v] = [distance + d,city_name]
                     else:
                         pre_node = pre_map[v]
+                        #only update if the distant to the new generated node is less than the previous one
                         if distance + d < pre_node[0]:
                             pre_map[v] = [distance + d, city_name]
 

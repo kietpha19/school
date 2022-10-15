@@ -3,10 +3,10 @@
 # Written by Chris Conly based on C++
 # code provided by Vassilis Athitsos
 # Written to be Python 2.4 compatible for omega
+# Modified by student, Hoang Anh Kiet PHam, to be Python 3.8.10 compatible for omage
 
 from copy import copy, deepcopy
 import random
-import sys
 from Agent import *
 
 class maxConnect4Game:
@@ -57,7 +57,7 @@ class maxConnect4Game:
                     self.pieceCount += 1
                     return 1
     
-    #make a copy of the current game
+    #make a copy of the current game, used to replicate pass by value
     def make_a_copy(self):
         copy_game = maxConnect4Game()
         copy_game.gameBoard = deepcopy(self.gameBoard)
@@ -73,13 +73,14 @@ class maxConnect4Game:
         test_game = self.make_a_copy()
         agent = Agent(test_game, depth)
         agent_column = agent.predict()
-       
         randColumn = random.randrange(0,7)
-        result = self.playPiece(agent_column)
+        column = agent_column # to pick between playing random or play by an AI agent
+
+        result = self.playPiece(column)
         if not result:
             self.aiPlay(depth)
         else:
-            print('\n\nmove %d: Player %d, column %d\n' % (self.pieceCount, self.currentTurn, agent_column+1))     
+            print('\n\nmove %d: Player %d, column %d\n' % (self.pieceCount, self.currentTurn, column+1))     
             #update current turn
             self.currentTurn = (self.currentTurn%2) + 1
 
