@@ -79,11 +79,11 @@ def convert_to_RPN(line):
                 operand = stack.pop()
                 if operand in opened_bracket:
                     if bracket_map[c] != operand: #make sure two brackets are matched
-                        return sematic_error
+                        return -1.1
                     else:
                         break 
                 elif not stack: #since c is a closed bracker, there has to be a opened bracket
-                    return sematic_error
+                    return -1.1
                 else:
                     RPN.append(operand)
         elif c in left_associate_operators:
@@ -96,7 +96,7 @@ def convert_to_RPN(line):
     while stack:
         c = stack.pop()
         if c in opened_bracket:
-            return sematic_error
+            return -1.1
         RPN.append(c)
     
     return RPN
@@ -140,8 +140,11 @@ while (line := input_file.readline().rstrip()):
             print(syntax_error)
         else:
             RPN = convert_to_RPN(line)
-            print("RPN: " , ' '.join(RPN))
-            result = parse_RPN(RPN)
-            print("result: " , result)
+            if (RPN == -1.1):
+                print(sematic_error)
+            else:
+                print("RPN: " , ' '.join(RPN))
+                result = parse_RPN(RPN)
+                print("result: " , result)
             
         print("\n")
