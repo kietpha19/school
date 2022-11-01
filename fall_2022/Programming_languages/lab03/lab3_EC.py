@@ -9,14 +9,15 @@ README NOTES
 added operators:
  ^: power
  %: modulo division
+ -: unary negative (input must be in correct format, has space between number and operaotr)
+ eg: 8 + -7 or -7 + 3
 
  - my program can also use different bracket such as {}, [], or ()
  - my prgram can also handle number with multiple digit as long as it input as correct format (space in between)
  - notes that if the input enter without space between numbers and operator, it will assume as single digit number
  also notes that the input must be either have space between ALL of them, or have NO space at all; 
- otherwise the program will crash. 
+ otherwise the program will crash or print out the wrong output. 
  - I didn't have enought time to handle this edge case, right now I'm simply using a work-around method
-
 '''
 
 
@@ -41,7 +42,7 @@ RPN_error = "sematic errors! can't evaluate RPN"
 
 #this is scanning phase, scanning to check if there is any invalid character
 def check_line(line):
-    if (line[0] not in digits) and (line[0] not in opened_bracket):
+    if (line[0] not in digits) and (line[0] not in opened_bracket) and (line[0] != '-'):
         return 0
     for i in range(1, len(line)):
         if (line[i] not in digits) and (line[i] not in all_operators) \
