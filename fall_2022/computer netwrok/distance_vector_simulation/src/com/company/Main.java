@@ -1,48 +1,49 @@
 package com.company;
 import java.io.IOException;
-import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
 
 public class Main {
     private static final int n = 7;
-    private static final int max_cost = 100000;
+    private static final int max_cost = 10000;
+    private static final ExecutorService thread_exe = Executors.newFixedThreadPool(100);
+
     public static void main(String[] args) throws IOException, InterruptedException {
         Scanner reader = new Scanner(System.in);
         System.out.print("Enter input file name: ");
         String input_fileName = reader.nextLine();
-        reader.close();
 
         int graph[][] = process_input_file(input_fileName);
         int num_router = get_num_router(graph);
         Map<Integer, Router> routers = init_routers(num_router, graph);
         print_network(routers);
 
-        /**
-         * While network is not stable
-         *     - Step 1: broadcast
-         *       For each router in the network
-         *           new Thread() -> router.notifyNeighbor();
-         *
-         *       Wait until all thread is done
-         * -------------------------------------------------------
-         *     - Step 2: compute
-         *       For each router in the network
-         *           new Thread() -> router.compute();
-         *
-         *       Wait until all thread is done
-         */
+        boolean stable = false;
 
         while(true){
+
             for(Router router : routers.values()){
-                router.compute();
+                Runnable r = new MyThread(router);
+                thread_exe.execute(r);
             }
+           System.out.println(thread_exe.awaitTermination(3, TimeUnit.SECONDS));
+
             print_network(routers);
-            Thread.sleep(3000);
+            //Thread.sleep(3000);
+            stable = check_stable(routers);
+            if(stable){
+                System.out.println("pausing....");
+                reader.nextLine();
+            }
+
         }
     }
 
@@ -104,7 +105,7 @@ public class Main {
             for(int j=1; j<=num_router; j++){
                 if(graph[i][j] > 0 && graph[i][j] < max_cost){
                     Router nb = routers.get(j);
-                    routers.get(i).neighbors.add(nb);
+                    routers.get(i).neighbors.put(nb.Id, nb);
                 }
             }
         }
@@ -116,15 +117,23 @@ public class Main {
             System.out.println("router: " + router.Id);
             System.out.println("Distance vector");
             for(int i=1; i<router.DV.length; i++){
-                System.out.println(i + ": " + router.DV[i]);
+                System.out.println(i + ": " + router.DV[i] + ", next hop: " + router.next_hop[i]);
             }
             System.out.println("neighbor");
-            for(Router nb : router.neighbors){
+            for(Router nb : router.neighbors.values()){
                 System.out.print(nb.Id + "\t");
             }
-            System.out.println("\n---------------");
+            System.out.println("\n-----------------------");
         }
 
     }
 
+    //check if the network is stable
+    private static boolean check_stable(Map<Integer, Router> routers){
+        for(Router router : routers.values()){
+            if(router.changed == true)
+                return false;
+        }
+        return true;
+    }
 }

@@ -1,8 +1,5 @@
 package com.company;
 
-import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
 
 public class MyThread implements Runnable{
     Router router;
@@ -12,7 +9,12 @@ public class MyThread implements Runnable{
 
     @Override
     public void run(){
-        System.out.println(router.Id);
+        long start = System.currentTimeMillis();
+        System.out.println("router computing: " + router.Id);
 
+        router.compute();
+
+        long end = System.currentTimeMillis();
+        System.out.println("finish computing for: " + router.Id + " time: " + (end-start));
     }
 }
