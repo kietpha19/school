@@ -19,6 +19,7 @@ public class NetworkController {
 		this.inputFile = inputFile;
 	}
 
+<<<<<<< Updated upstream
 	@GetMapping("/")
 	public String listUploadedFiles(Model model) throws IOException {
 
@@ -26,6 +27,8 @@ public class NetworkController {
 //						path -> MvcUriComponentsBuilder.fromMethodName(FileUploadController.class,
 //								"serveFile", path.getFileName().toString()).build().toUri().toString())
 //				.collect(Collectors.toList()));
+=======
+>>>>>>> Stashed changes
 
 		return "uploadForm";
 	}
