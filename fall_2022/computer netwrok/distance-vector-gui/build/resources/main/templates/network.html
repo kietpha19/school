@@ -5,23 +5,28 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 </head>
 <body>
-    <p><a href="/network">CLICK HERE TO INITIALIZE NETWORK</a></p>
     <p><a href="/compute">CLICK HERE TO COMPUTE NETWORK</a></p>
+    <div th:each="router: ${routers}">
+        <a th:text="'Router:' + ${router.id}"/>
+        <table>
+            <tr>
+            <tr>
+                <th>Destination</th>
+                <th>Distance</th>
+                <th>Next Hop</th>
+            </tr>
+            </tr>
+            <tr th:each="dv_row: ${router.dv_row}">
+                <td th:text="${dv_row.destination}" />
+                <td th:text="${dv_row.distance}" />
+                <td th:text="${dv_row.next_hop}" />
+            </tr>
+        </table>
+        <a th:text="'Neighbors:' + ${router.neighbors}"/>
+        <br>
+        <a>------------------------------------------------------------</a>
+        <br>
+    </div>
 
-
-    <table>
-        <tr>
-        <tr>
-            <th>ID</th>
-            <th>DV</th>
-            <th>NEIGHBORS</th>
-        </tr>
-<!--        </tr>-->
-<!--        <tr th:each="router: ${routers}">-->
-<!--            <td th:text="${router.id}" />-->
-<!--            <td th:text="${router.dv}" />-->
-<!--            <td th:text="${router.neighbors}" />-->
-<!--        </tr>-->
-    </table>
 </body>
 </html>

@@ -2,11 +2,12 @@ package com.example.computernetwork.view;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class RouterView implements Serializable {
     private String id;
-    private String dv;
+    private List<DvView> dv_row;
     private String neighbors;
 
     public String getId() {
@@ -17,12 +18,12 @@ public class RouterView implements Serializable {
         this.id = id;
     }
 
-    public String getDv() {
-        return dv;
+    public List<DvView> getDv_row() {
+        return dv_row;
     }
 
-    public void setDv(String dv) {
-        this.dv = dv;
+    public void setDv_row(List<DvView> dv_row) {
+        this.dv_row = dv_row;
     }
 
     public String getNeighbors() {
