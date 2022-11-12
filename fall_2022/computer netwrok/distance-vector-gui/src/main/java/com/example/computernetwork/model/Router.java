@@ -11,6 +11,7 @@ public class Router {
     private Map<Integer, Router> neighbors = new HashMap<>();
     private boolean changed = true;
 
+    //create new router and init its DV to max cost
     public Router(int id, int dv[]) {
         this.id = id;
         this.dv = dv;
@@ -65,6 +66,7 @@ public class Router {
         this.changed = changed;
     }
 
+    //compute its DV whenever receive updated DV from its neighbor
     public void compute(){
         changed = false;
         for(int i=1; i< dv.length; i++){

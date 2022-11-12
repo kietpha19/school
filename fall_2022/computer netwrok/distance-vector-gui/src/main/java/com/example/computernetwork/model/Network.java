@@ -17,6 +17,9 @@ public class Network {
     private static final ExecutorService thread_exe = Executors.newFixedThreadPool(100);
     private Map<Integer, Router> allRouters = new HashMap<>();
     private int[][] graph = new int[n][n];
+    private int num_router = 0;
+    private boolean stable = false;
+    private int cycle = 0;
 
 //    public Network() throws FileNotFoundException, InterruptedException {
 //        init();
@@ -28,6 +31,22 @@ public class Network {
 
     public void setAllRoutes(Map<Integer, Router> allRoutes) {
         this.allRouters = allRoutes;
+    }
+
+    public boolean isStable() {
+        return stable;
+    }
+
+    public void setStable(boolean stable) {
+        this.stable = stable;
+    }
+
+    public int getCycle() {
+        return cycle;
+    }
+
+    public void setCycle(int cycle) {
+        this.cycle = cycle;
     }
 
     //parse the input file and create a 2D array represent the network graph
@@ -53,19 +72,17 @@ public class Network {
     }
 
     //check the graph to see how many routers are in the network
-    private int get_num_router(){
-        int num_router = 0;
+    private void get_num_router(){
         for(int i= n-1 ;i > 0; i--){
             if(graph[i][i] == 0) {
                 num_router = i;
                 break;
             }
         }
-        return num_router;
     }
 
     //initialize all router in the network
-    private void init_routers(int num_router){
+    private void init_routers(){
         for(int i=1; i<=num_router; i++){
             int DV[] = new int[num_router+1];
             DV[0] = -2;
@@ -108,50 +125,62 @@ public class Network {
     }
 
     //check if the network is stable
-    private static boolean check_stable(Map<Integer, Router> routers){
-        for(Router router : routers.values()){
+    public boolean check_stable(){
+        for(Router router : allRouters.values()){
             if(router.isChanged() == true)
                 return false;
         }
         return true;
     }
 
-    /**
-     *
-     *
-     */
-//    public void compute() {
-//        boolean stable = false;
-//
-//        while(true){
-//            for(Router router : routers.values()){
-//                Runnable r = new MyThread(router);
-//                thread_exe.execute(r);
-//            }
-//            System.out.println(thread_exe.awaitTermination(3, TimeUnit.SECONDS));
-//
-//            print_network(routers);
-//            //Thread.sleep(3000);
-//            stable = check_stable(routers);
-//            if(stable){
-//                System.out.println("pausing....");
-//                reader.nextLine();
-//            }
-//        }
-//    }
+    //each router in the network send its DV to neighbor, when receive DV from neighbor, recompute its DC
+    public void compute() throws InterruptedException {
 
+        for(Router router : allRouters.values()){
+            Runnable r = new MyThread(router);
+            thread_exe.execute(r);
+        }
+        thread_exe.awaitTermination(1, TimeUnit.SECONDS);
+        //print_network(allRouters);
+        //Thread.sleep(3000);
+        stable = check_stable();
+        if(stable){
+            System.out.println("pausing....");
+        }
+        else{
+            System.out.println("not stable");
+            cycle +=1;
+        }
+
+    }
+
+    //getting data from the input file (converted to input stream) to build the graph and init the network
     public void init_network(InputStream input_stream) throws InterruptedException, FileNotFoundException {
         Scanner reader = new Scanner(System.in);
 
         process_input_file(input_stream);
-        int num_router = get_num_router();
-        init_routers(num_router);
+        get_num_router();
+        init_routers();
         //print_network(routers);
     }
 
+    //update the link cost changed between any two routers
+    public void update_link(int r1, int r2, int cost){
+        graph[r1][r2] = cost;
+        graph[r2][r2] = cost;
+        Router router1 = allRouters.get(r1);
+        Router router2 = allRouters.get(r2);
+        router1.getDv()[r2] = cost;
+        router2.getDv()[r1] = cost;
+        router1.setChanged(true);
+        router2.setChanged(true);
+        router1.getNext_hop()[r2] = r2;
+        router2.getNext_hop()[r1] = r1;
+        cycle = 0;
+    }
 
+    //convert object Router to object RouterView to display the DV table onto GUI
     public List<RouterView> getRoutersView() {
-        // TODO: convert the Router object to the RouteView object will represent the format on the UI
         List<RouterView> ret = new ArrayList<>();
 
         for (Router router : allRouters.values()) {

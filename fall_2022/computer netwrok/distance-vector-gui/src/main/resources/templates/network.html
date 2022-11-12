@@ -6,6 +6,15 @@
 </head>
 <body>
     <p><a href="/compute">CLICK HERE TO COMPUTE NETWORK</a></p>
+    <p><a href="/change">CLICK HERE TO CHANGE A LINK COST</a></p>
+    <div th:if="${message}">
+        <h3 th:text="${message}"/>
+    </div>
+
+    <div>
+        <h3 th:text="'Cycles:' + ${cycle}"/>
+    </div>
+
     <div th:each="router: ${routers}">
         <a th:text="'Router:' + ${router.id}"/>
         <table>
