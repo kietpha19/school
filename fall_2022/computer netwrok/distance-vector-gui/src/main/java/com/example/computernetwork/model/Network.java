@@ -118,7 +118,6 @@ public class Network {
     }
 
 
-
     public void compute() {
         // TODO
         return;
@@ -128,6 +127,7 @@ public class Network {
         Scanner reader = new Scanner(System.in);
         System.out.print("Enter input file name: ");
         String input_fileName = reader.nextLine();
+
 
         int graph[][] = process_input_file(input_fileName);
         int num_router = get_num_router(graph);

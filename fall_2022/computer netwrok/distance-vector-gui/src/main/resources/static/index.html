@@ -1,12 +1,25 @@
 <!DOCTYPE HTML>
-<html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
 <head> 
     <title>Getting Started: Serving Web Content</title> 
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 </head>
 <body>
     <p>Welcome to distance vector routing simulator</p>
-    <p><a href="/input">CLICK HERE TO CHOOSE AN INPUT FILE</a></p>
-    <p><a href="/network">CLICK HERE TO CHOOSE AN INPUT FILE</a></p>
+    <p>Click button below to choose an input file</p>
+
+    <input type="file" id="input" accept=".txt" />
+    <input type="submit" />
+
+<!--    <div>-->
+<!--        <form method="POST" enctype="multipart/form-data" action="/">-->
+<!--            <table>-->
+<!--                <tr><td>Input File:</td><td><input type="file" name="file" /></td></tr>-->
+<!--                <tr><td></td><td><input type="submit" value="Submit" /></td></tr>-->
+<!--            </table>-->
+<!--        </form>-->
+<!--    </div>-->
+
+    <p><a href="/network">CLICK HERE TO START SIMULATION</a></p>
 </body>
 </html>
