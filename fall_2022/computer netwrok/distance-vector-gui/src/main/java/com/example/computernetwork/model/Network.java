@@ -145,6 +145,7 @@ public class Network {
 
     }
 
+    //clear the old network if any to init new network
     private void clear_network(){
         allRouters.clear();
         num_router = 0;

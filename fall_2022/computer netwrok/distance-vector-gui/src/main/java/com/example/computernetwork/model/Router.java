@@ -3,6 +3,7 @@ package com.example.computernetwork.model;
 import java.util.HashMap;
 import java.util.Map;
 
+//this class store info of each router
 public class Router {
     private static final int max_cost = 10000;
     private int id;

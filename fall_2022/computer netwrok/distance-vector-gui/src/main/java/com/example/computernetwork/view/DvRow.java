@@ -1,5 +1,6 @@
 package com.example.computernetwork.view;
 
+//this class to display each row in the DV (looping in html)
 public class DvRow {
     private String destination;
     private String distance;

@@ -3,6 +3,7 @@ package com.example.computernetwork.view;
 import java.io.Serializable;
 import java.util.List;
 
+//this class to display each router onto GUI
 public class RouterView implements Serializable {
     private String id;
     private List<DvRow> dv_row;

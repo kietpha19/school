@@ -18,13 +18,15 @@
         <h3 th:text="${message}"/>
     </div>
 
+    <div th:if="${exe_time}">
+        <h3 th:text="'total compute time: ' + ${exe_time} + 'ms'"/>
+    </div>
+
     <div>
         <h3 th:text="'Cycles:' + ${cycle}"/>
     </div>
 
-    <div th:if="${exe_time}">
-        <h3 th:text="'total compute time: ' + ${exe_time} + 'ms'"/>
-    </div>
+
 
     <div th:each="router: ${routers}">
         <a th:text="'Router:' + ${router.id}"/>

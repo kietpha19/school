@@ -27,6 +27,7 @@ public class NetworkController {
 	private static long autoCompute_start_time;
 	private static long autoCompute_end_time;
 
+	//auto compute mode
 	@GetMapping("/autoCompute")
 	public String auto_compute(Model model) throws InterruptedException {
 		if(network.getCycle() == 0){
