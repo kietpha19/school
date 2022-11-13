@@ -25,6 +25,22 @@ import java.util.List;
 public class NetworkController {
 	private static Network network = new Network();
 
+	@GetMapping("/autoCompute")
+	public String auto_compute(Model model) throws InterruptedException {
+		network.compute();
+		model.addAttribute("routers", network.getRoutersView());
+		boolean stable = network.isStable();
+		if(stable){
+			model.addAttribute("message", "Network is stable!");
+		}else{
+			model.addAttribute("message", "Network is not stable!");
+		}
+		model.addAttribute("cycle", network.getCycle());
+		model.addAttribute("auto_compute", true);
+		model.addAttribute("is_stable", stable);
+		return "network";
+	}
+
 	//process the input file
 	@PostMapping(value = "/input")
 	public String upload(@RequestParam(value = "file") MultipartFile file, Model model) throws IOException, InterruptedException {
@@ -36,7 +52,7 @@ public class NetworkController {
 	@GetMapping("/network")
 	public String network(Model model) {
 		model.addAttribute("routers", network.getRoutersView());
-		network.check_stable();
+		network.isStable();
 		if(network.isStable()){
 			model.addAttribute("message", "Network is stable!");
 		}else{

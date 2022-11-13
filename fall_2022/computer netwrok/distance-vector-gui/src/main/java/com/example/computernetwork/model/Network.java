@@ -1,9 +1,8 @@
 package com.example.computernetwork.model;
 
-import com.example.computernetwork.view.DvView;
+import com.example.computernetwork.view.DvRow;
 import com.example.computernetwork.view.RouterView;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.*;
@@ -18,7 +17,6 @@ public class Network {
     private Map<Integer, Router> allRouters = new HashMap<>();
     private int[][] graph = new int[n][n];
     private int num_router = 0;
-    private boolean stable = false;
     private int cycle = 0;
 
 //    public Network() throws FileNotFoundException, InterruptedException {
@@ -33,13 +31,6 @@ public class Network {
         this.allRouters = allRoutes;
     }
 
-    public boolean isStable() {
-        return stable;
-    }
-
-    public void setStable(boolean stable) {
-        this.stable = stable;
-    }
 
     public int getCycle() {
         return cycle;
@@ -125,7 +116,7 @@ public class Network {
     }
 
     //check if the network is stable
-    public boolean check_stable(){
+    public boolean isStable(){
         for(Router router : allRouters.values()){
             if(router.isChanged() == true)
                 return false;
@@ -143,7 +134,7 @@ public class Network {
         thread_exe.awaitTermination(1, TimeUnit.SECONDS);
         //print_network(allRouters);
         //Thread.sleep(3000);
-        stable = check_stable();
+        boolean stable = isStable();
         if(stable){
             System.out.println("pausing....");
         }
@@ -154,10 +145,15 @@ public class Network {
 
     }
 
+    private void clear_network(){
+        allRouters.clear();
+        num_router = 0;
+        cycle = 0;
+    }
+
     //getting data from the input file (converted to input stream) to build the graph and init the network
     public void init_network(InputStream input_stream) throws InterruptedException, FileNotFoundException {
-        Scanner reader = new Scanner(System.in);
-
+        clear_network();
         process_input_file(input_stream);
         get_num_router();
         init_routers();
@@ -186,9 +182,9 @@ public class Network {
         for (Router router : allRouters.values()) {
             RouterView routerView = new RouterView();
             routerView.setId(String.valueOf(router.getId()));
-            List<DvView> DV_row = new ArrayList<>();
+            List<DvRow> DV_row = new ArrayList<>();
             for(int i=1; i<router.getDv().length; i++){
-                DvView row = new DvView(String.valueOf(i), String.valueOf(router.getDv()[i]),
+                DvRow row = new DvRow(String.valueOf(i), String.valueOf(router.getDv()[i]),
                         String.valueOf(router.getNext_hop()[i]));
                 DV_row.add(row);
             }

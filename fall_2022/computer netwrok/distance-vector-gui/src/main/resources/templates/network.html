@@ -3,9 +3,16 @@
 <head> 
     <title>Simulating Network Router</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+    <script th:if="${auto_compute} == true and ${is_stable} == false">
+        window.setTimeout( function() {
+         window.location.reload();
+        }, 1000);
+    </script>
 </head>
 <body>
-    <p><a href="/compute">CLICK HERE TO COMPUTE NETWORK</a></p>
+    <p><a href="/autoCompute">CLICK HERE TO AUTO COMPUTE NETWORK</a></p>
+    <p><a href="/compute">CLICK HERE TO COMPUTE NETWORK STEP BY STEP</a></p>
     <p><a href="/change">CLICK HERE TO CHANGE A LINK COST</a></p>
     <div th:if="${message}">
         <h3 th:text="${message}"/>

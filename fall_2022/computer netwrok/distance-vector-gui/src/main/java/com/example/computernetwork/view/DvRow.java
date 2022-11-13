@@ -1,13 +1,11 @@
 package com.example.computernetwork.view;
 
-import java.util.List;
-
-public class DvView {
+public class DvRow {
     private String destination;
     private String distance;
     private String next_hop;
 
-    public DvView(String destination, String distance, String next_hop) {
+    public DvRow(String destination, String distance, String next_hop) {
         this.destination = destination;
         this.distance = distance;
         this.next_hop = next_hop;
