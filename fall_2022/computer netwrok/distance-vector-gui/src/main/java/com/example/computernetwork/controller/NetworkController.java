@@ -24,14 +24,21 @@ import java.util.List;
 @Controller
 public class NetworkController {
 	private static Network network = new Network();
+	private static long autoCompute_start_time;
+	private static long autoCompute_end_time;
 
 	@GetMapping("/autoCompute")
 	public String auto_compute(Model model) throws InterruptedException {
+		if(network.getCycle() == 0){
+			autoCompute_start_time = System.currentTimeMillis();
+		}
 		network.compute();
 		model.addAttribute("routers", network.getRoutersView());
 		boolean stable = network.isStable();
 		if(stable){
 			model.addAttribute("message", "Network is stable!");
+			autoCompute_end_time = System.currentTimeMillis();
+			model.addAttribute("exe_time", autoCompute_end_time - autoCompute_start_time);
 		}else{
 			model.addAttribute("message", "Network is not stable!");
 		}
@@ -65,6 +72,7 @@ public class NetworkController {
 	//computer all routers in the network step by step
 	@GetMapping("/compute")
 	public String compute(Model model) throws InterruptedException {
+
 		network.compute();
 		return "redirect:/network";
 	}
