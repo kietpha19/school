@@ -8,17 +8,14 @@
     <p>Welcome to distance vector routing simulator</p>
     <p>Click button below to choose an input file</p>
 
-    <input type="file" id="input" accept=".txt" />
-    <input type="submit" />
-
-<!--    <div>-->
-<!--        <form method="POST" enctype="multipart/form-data" action="/">-->
-<!--            <table>-->
-<!--                <tr><td>Input File:</td><td><input type="file" name="file" /></td></tr>-->
-<!--                <tr><td></td><td><input type="submit" value="Submit" /></td></tr>-->
-<!--            </table>-->
-<!--        </form>-->
-<!--    </div>-->
+    <div>
+        <form method="POST" enctype="multipart/form-data" action="/input">
+            <table>
+                <tr><td>Input File:</td><td><input type="file" name="file" /></td></tr>
+                <tr><td></td><td><input type="submit" value="Submit" /></td></tr>
+            </table>
+        </form>
+    </div>
 
     <p><a href="/network">CLICK HERE TO START SIMULATION</a></p>
 </body>

@@ -8,12 +8,12 @@ public class MyThread implements Runnable{
 
     @Override
     public void run(){
-        long start = System.currentTimeMillis();
-        System.out.println("router computing: " + router.getId());
+//        long start = System.currentTimeMillis();
+//        System.out.println("router computing: " + router.getId());
 
         router.compute();
 
-        long end = System.currentTimeMillis();
-        System.out.println("finish computing for: " + router.getId() + " time: " + (end-start));
+//        long end = System.currentTimeMillis();
+//        System.out.println("finish computing for: " + router.getId() + " time: " + (end-start));
     }
 }

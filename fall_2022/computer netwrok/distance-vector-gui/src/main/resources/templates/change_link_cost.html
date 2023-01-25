@@ -1,0 +1,19 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Simulating Network Router</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+    <div>enter the link cost information</div>
+
+    <form method="POST" enctype="multipart/form-data" action="/update_link">
+        <table>
+            <tr><td>From Router:</td><td><input type="number" name="router1" /></td></tr>
+            <tr><td>To Router:</td><td><input type="number" name="router2" /></td></tr>
+            <tr><td>New Link Cost:</td><td><input type="number" name="cost" /></td></tr>
+            <tr><td></td><td><input type="submit" value="Submit" /></td></tr>
+        </table>
+    </form>
+</body>
+</html>
