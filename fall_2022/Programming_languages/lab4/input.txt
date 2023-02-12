@@ -12,5 +12,8 @@ class Foo
             // as is this: }
         } // what if this were on one line? }}}
     }
+    System.out.println("there is one \" here");
+    /* alo
+    1234 */
 }
 //end of program 
