@@ -8,7 +8,7 @@ numpy.int = numpy.int_
 from PySide2 import QtCore, QtWidgets, QtGui
 from skvideo.io import vread
 
-from MotionDetector_draft import MotionDetector
+from MotionDetector import MotionDetector
 
 class QtDemo(QtWidgets.QWidget):
     def __init__(self, frames):
@@ -46,13 +46,15 @@ class QtDemo(QtWidgets.QWidget):
 
 
         ########### MY CODE #############
-        tracker = MotionDetector(frames)
-        tracker.initialize(self.current_frame)
+        self.tracker = MotionDetector(frames)
 
     @QtCore.Slot()
     def on_click(self):
         if self.current_frame == self.frames.shape[0]-1:
             return
+        
+        self.tracker.update_tracking(self.current_frame)
+
         h, w, c = self.frames[self.current_frame].shape
         if c == 1:
             img = QtGui.QImage(self.frames[self.current_frame], w, h, QtGui.QImage.Format_Grayscale8)

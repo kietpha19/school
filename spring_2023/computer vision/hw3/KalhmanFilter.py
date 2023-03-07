@@ -8,7 +8,7 @@ https://thekalmanfilter.com/kalman-filter-explained-simply/
 Assume we only track position and velocity
 '''
 
-class KalmanFilter:
+class KalhmanFilter:
     def __init__(self, X, dt=1, start_frame=0, last_updated_frame=0):
         '''
         X : The mean state estimate of the previous step (k−1).
@@ -30,11 +30,12 @@ class KalmanFilter:
                            [0, 1, 0, dt], 
                            [0, 0, 1, 0], 
                            [0, 0, 0,1]])
-        self.Q = np.eye(X.shape()[0])
-        self.B = np.eye(X.shape()[0])
-        self.U = np.zeros((X.shape()[0],1))
+        self.Q = np.eye(4)
+        self.B = np.eye(4)
+        self.U = np.zeros((4,1))
         self.H = np.array([[1, 0, 0, 0], [0, 1, 0, 0]]) 
 
+        self.start_frame = last_updated_frame
         self.last_updated_frame = last_updated_frame
 
     def predict(self):
@@ -49,10 +50,10 @@ class KalmanFilter:
         # probably want to set R to some sort of motion_threshold = 0.05
         # R=np.diag([self.motion_threshold, self.motion_threshold])) 
         # right now R has 1 in diagonal
-        R = np.eye(Y.shape()[0]) 
+        R = np.eye(1) 
         IM = np.dot(self.H, self.X)
-        #IS = R + np.dot(self.H, np.dot(self.P, self.H.T))
-        IS = R + np.dot(self.H, np.dot(self.P, self.H.T)) - np.dot(K, np.dot(self.H, self.P))
+        IS = R + np.dot(self.H, np.dot(self.P, self.H.T))
+        #IS = R + np.dot(self.H, np.dot(self.P, self.H.T)) - np.dot(K, np.dot(self.H, self.P))
         K = np.dot(self.P, np.dot(self.H.T, np.linalg.inv(IS)))
 
         #update state and state covariance

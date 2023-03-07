@@ -32,6 +32,7 @@ class MotionDetector:
     '''
     def update_tracking(self, frame_idx):
         if frame_idx - self.current_frame_idx < self.skip_frames:
+            self.draw_bbox(frame_idx)
             return
         
         # detect new object (observation/measurement), to compare with the prediction
@@ -47,7 +48,7 @@ class MotionDetector:
             min_diff = self.distance_threshold
             matched_obj = None
             for new_obj in new_objects:
-                diff = np.linalg.norm(predicted_X, new_obj.X)
+                diff = np.linalg.norm(predicted_X - new_obj.X, ord=2)
                 if diff < min_diff:
                     matched_obj = new_obj
             if matched_obj:
@@ -64,7 +65,7 @@ class MotionDetector:
             min_diff = self.distance_threshold
             matched_obj = None
             for new_obj in new_objects:
-                diff = np.linalg.norm(predicted_X, new_obj.X)
+                diff = np.linalg.norm(predicted_X - new_obj.X, ord=2)
                 if diff < min_diff:
                     matched_obj = new_obj
             if matched_obj:
@@ -74,17 +75,18 @@ class MotionDetector:
                 # then add it to tracking list and remove out of candidates list
                 if obj.last_updated_frame - obj.start_frame > self.frame_hysteresis \
                 and len(self.tracking_objects) < self.max_objects:
-                    self.tracking_objects.add(obj)
+                    self.tracking_objects.append(obj)
                     self.candidates.remove(obj)
                 new_objects.remove(matched_obj)
             # remove long-enough UN-UPDATED tracked object out of candidates list
-            elif frame_idx - obj.last_update_frame > self.frame_hysteresis:
+            elif frame_idx - obj.last_updated_frame > self.frame_hysteresis:
                 self.candidates.remove(obj)
 
         # the rest of the new obj should be added to be new candidates
-        self.candidates.add(new_objects)
+        self.candidates.append(new_objects)
         
         self.last_frame_idx = frame_idx
+        self.draw_bbox(frame_idx)
 
 
     def detect_objects(self, frame_idx):
@@ -107,10 +109,21 @@ class MotionDetector:
             X = np.array((region.centroid, [0.1,0.1])).reshape(4,1)
             object = KalhmanFilter(X, dt=frame_idx - self.current_frame_idx,
                                    start_frame= frame_idx, last_updated_frame=frame_idx)
-            detected_objects.add(object)
+            detected_objects.append(object)
         
         self.current_frame_idx = frame_idx
         return detected_objects
+
+    def draw_bbox(self, frame_idx):
+        for obj in self.tracking_objects:
+            x = obj.X[0] - 3
+            y = obj.X[1] - 2
+            color = (0,0,255) #red
+            thick = 2
+            cv2.rectangle(self.frames[frame_idx], (x+6, y+4), color, thick)
+
+        
+
 
         
         
