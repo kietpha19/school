@@ -45,12 +45,24 @@ to use them in the prediction phase.
 
 The implementation is combination of my code (which is from the class lecture) and ChatGPT code
 
+https://math.mit.edu/~edelman/publications/support_vector.pdf
+https://pages.cs.wisc.edu/~dpage/cs760/SMOlecture.pdf
+the paper and the slides were used as reference (SVM with Largrange Multiplier and SMO)
+
 '''
 
 class SVM:
     def __init__(self, C=1.0, tol=1e-3, max_iter=1000):
-        self.C = C
-        self.tol = tol
+        self.C = C #regularization parameter
+        self.tol = tol # tolerance parameter
+        '''
+        The algorithm continues to update the Lagrange multipliers until the KKT conditions are satisfied, 
+        or until the difference between the previous and current values of the Lagrange multipliers is less than tol. 
+        In other words, if the change in the Lagrange multipliers is smaller than tol, 
+        the algorithm considers that it has converged and stops iterating. 
+        A smaller value of tol means that the algorithm will continue to update the Lagrange multipliers 
+        until a more precise solution is obtained, at the cost of potentially longer training time.
+        '''
         self.max_iter = max_iter
         self.w = None
         self.b = None
@@ -68,6 +80,7 @@ class SVM:
         K = np.dot(X, X.T)
 
         # Optimization loop
+        # using SMO algorithm to solve the poly optimization problem
         for i in range(self.max_iter):
             # Compute predictions and errors
             y_pred = np.dot(self.alphas * y, K) + self.b

@@ -79,7 +79,8 @@ def main():
         dataset = "Bank Note"
     elif file_name == "sonar.txt":
         dataset = "sonar"
-
+    else:
+        dataset= file_name
     my_model.get_output(dataset=dataset, alg_name=model, output_file="output.txt", n_print=5)
     
 
