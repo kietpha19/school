@@ -1,0 +1,19 @@
+Dataset: Bank Note
+Machine Learning algorithm chosen: SVM
+Accuracy of training (Scratch): 94.90291262135922
+Accuracy of Scikit-learn model: 99.27184466019418
+Prediction Point: [ 0.0040545  0.62905   -0.64121    0.75817  ]
+Predicted Class: 1.0
+Actual class: 1
+Prediction Point: [ 5.1321   -0.031048  0.32616   1.1151  ]
+Predicted Class: -1.0
+Actual class: -1
+Prediction Point: [ -3.506   -12.5667   15.1606   -0.75216]
+Predicted Class: -1.0
+Actual class: 1
+Prediction Point: [ 4.2969   7.617   -2.3874  -0.96164]
+Predicted Class: -1.0
+Actual class: -1
+Prediction Point: [ 4.0102 10.6568 -4.1388 -5.0646]
+Predicted Class: -1.0
+Actual class: -1
