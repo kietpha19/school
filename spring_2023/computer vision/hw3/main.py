@@ -20,13 +20,18 @@ class QtDemo(QtWidgets.QWidget):
 
         self.button = QtWidgets.QPushButton("Next Frame")
 
+        ########### MY CODE #############
+        self.tracker = MotionDetector(frames)
+        # self.tracker.test()
+        self.current_frame = 2
+
         # Configure image label
         self.img_label = QtWidgets.QLabel(alignment=QtCore.Qt.AlignCenter)
-        h, w, c = self.frames[0].shape
+        h, w, c = self.frames[2].shape
         if c == 1:
-            img = QtGui.QImage(self.frames[0], w, h, QtGui.QImage.Format_Grayscale8)
+            img = QtGui.QImage(self.frames[2], w, h, QtGui.QImage.Format_Grayscale8)
         else:
-            img = QtGui.QImage(self.frames[0], w, h, QtGui.QImage.Format_RGB888)
+            img = QtGui.QImage(self.frames[2], w, h, QtGui.QImage.Format_RGB888)
         self.img_label.setPixmap(QtGui.QPixmap.fromImage(img))
 
         # Configure slider
@@ -44,9 +49,6 @@ class QtDemo(QtWidgets.QWidget):
         self.button.clicked.connect(self.on_click)
         self.frame_slider.sliderMoved.connect(self.on_move)
 
-
-        ########### MY CODE #############
-        self.tracker = MotionDetector(frames)
 
     @QtCore.Slot()
     def on_click(self):

@@ -9,7 +9,7 @@ Assume we only track position and velocity
 '''
 
 class KalhmanFilter:
-    def __init__(self, X, dt=1, start_frame=0, last_updated_frame=0):
+    def __init__(self, X, dt=1, start_frame=0, last_updated_frame=0, region=None):
         '''
         X : The mean state estimate of the previous step (k−1).
         P : The state covariance of previous step (k−1).
@@ -37,13 +37,14 @@ class KalhmanFilter:
 
         self.start_frame = last_updated_frame
         self.last_updated_frame = last_updated_frame
+        self.region = region
 
     def predict(self):
         # predicted state
-        X = np.dot(self.A, self.X) + np.dot(self.B, self.U)
-        #predicted covariance, don't need yet
-        P = np.dot(self.A, np.dot(self.P, self.A.T)) + self.Q  
-        return X
+        self.X = np.dot(self.A, self.X) + np.dot(self.B, self.U)
+        #predicted covariance
+        self.P = np.dot(self.A, np.dot(self.P, self.A.T)) + self.Q  
+        return self.X
 
     def update(self, Y):
         # np.eye return matrix with 1 in diagonal and 0 else where

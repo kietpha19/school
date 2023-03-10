@@ -67,7 +67,7 @@ class SVM:
         self.w = None
         self.b = None
         self.support_vectors = None
-        self.alphas = None
+        self.alphas = None # the learning rate
 
     def fit(self, X, y):
         n_samples, n_features = X.shape
@@ -92,7 +92,7 @@ class SVM:
             is_violating_KKT[is_violating_KKT == True] = y_times_error[is_violating_KKT == True] < 0
             is_violating_KKT[is_violating_KKT == False] = y_times_error[is_violating_KKT == False] > 0
 
-            # Check if KKT conditions are satisfied
+            # Check if KKT conditions are satisfied, if satified then optimized
             if np.all(np.logical_not(is_violating_KKT)):
                 break
 
@@ -116,7 +116,7 @@ class SVM:
 
             # Update the Lagrange multipliers of the two samples
             alpha_j_new = self.alphas[j] - (y[j] * (errors[i] - errors[j])) / eta
-            alpha_j_new = np.clip(alpha_j_new, L, H)
+            alpha_j_new = np.clip(alpha_j_new, L, H) # clip the interval edge
             alpha_i_new = self.alphas[i] + y[i] * y[j] * (self.alphas[j] - alpha_j_new)
 
             # Compute the bias
