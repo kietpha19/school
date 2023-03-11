@@ -68,6 +68,7 @@ class QtDemo(QtWidgets.QWidget):
     @QtCore.Slot()
     def on_move(self, pos):
         self.current_frame = pos
+        self.tracker.update_tracking(self.current_frame)
         h, w, c = self.frames[self.current_frame].shape
         if c == 1:
             img = QtGui.QImage(self.frames[self.current_frame], w, h, QtGui.QImage.Format_Grayscale8)

@@ -127,7 +127,7 @@ class MotionDetector:
         return detected_objects
     
     def draw_tracking_objects(self, frame_idx):
-        color = (0,0,255) #red
+        color = (0,0,255) #blue
         thick = 2
         for obj in self.tracking_objects:
             bbox = obj.region.bbox
@@ -142,6 +142,7 @@ class MotionDetector:
             left,top,right,bottom = bbox
             cv2.rectangle(self.frames[frame_idx], (top, left), (bottom, right), color, thick)
 
+    # testing function
     def test(self):
         idx = 2
         threshold = 0.05
@@ -173,7 +174,3 @@ class MotionDetector:
             ax.plot(bx, by, '-b', linewidth=2)
         
         plt.show()
-
-
-        
-        
