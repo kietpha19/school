@@ -38,6 +38,7 @@ class KalhmanFilter:
         self.start_frame = last_updated_frame
         self.last_updated_frame = last_updated_frame
         self.region = region
+        self.history = []
 
     def predict(self):
         # predicted state

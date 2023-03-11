@@ -57,6 +57,7 @@ class MotionDetector:
             if matched_obj:
                 obj.update(matched_obj.X[0:2])
                 obj.last_updated_frame = frame_idx
+                obj.history.append(obj.region.centroid[::-1]) # keeping the previous pos of tracked object
                 obj.region = matched_obj.region
                 new_objects.remove(matched_obj)
             # remove long-enough UN-UPDATED tracked object out of tracking list
@@ -133,10 +134,18 @@ class MotionDetector:
             bbox = obj.region.bbox
             left,top,right,bottom = bbox
             cv2.rectangle(self.frames[frame_idx], (top, left), (bottom, right), color, thick)
+            if len(obj.history) >= 2:
+                pts = np.array(obj.history, dtype=np.float32)
+                pts = pts.reshape((-1,1,2))
+                pts = pts.astype(np.int32)
+
+                #print(pts)
+                cv2.polylines(self.frames[frame_idx], [pts], False, (255, 0, 0), thickness=1)
     
     def draw_candidates(self, frame_idx):
         color = (0,255,0) #green
         thick = 1
+
         for obj in self.candidates:
             bbox = obj.region.bbox
             left,top,right,bottom = bbox
