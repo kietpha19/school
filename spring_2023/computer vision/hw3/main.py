@@ -19,6 +19,8 @@ class QtDemo(QtWidgets.QWidget):
         self.current_frame = 0
 
         self.button = QtWidgets.QPushButton("Next Frame")
+        self.forward_button = QtWidgets.QPushButton("Forward 10 frames")
+        self.backward_button = QtWidgets.QPushButton("Backward 10 frames")
 
         ########### MY CODE #############
         self.tracker = MotionDetector(frames)
@@ -41,21 +43,30 @@ class QtDemo(QtWidgets.QWidget):
         self.frame_slider.setMaximum(self.frames.shape[0]-1)
 
         self.layout = QtWidgets.QVBoxLayout(self)
+        self.button_layout = QtWidgets.QHBoxLayout()
+        self.button_layout.addWidget(self.backward_button)
+        self.button_layout.addWidget(self.forward_button)
         self.layout.addWidget(self.img_label)
+        self.layout.addLayout(self.button_layout)
         self.layout.addWidget(self.button)
         self.layout.addWidget(self.frame_slider)
 
         # Connect functions
         self.button.clicked.connect(self.on_click)
         self.frame_slider.sliderMoved.connect(self.on_move)
-
+        self.forward_button.clicked.connect(self.forward_click)
+        self.backward_button.clicked.connect(self.backward_click)
+        
 
     @QtCore.Slot()
-    def on_click(self):
-        if self.current_frame == self.frames.shape[0]-1:
+    def forward_click(self):
+        if self.current_frame == self.frames.shape[0]-10:
             return
         
-        self.tracker.update_tracking(self.current_frame)
+        self.current_frame +=10
+        self.frame_slider.setValue(self.current_frame)
+        if self.current_frame > self.tracker.last_frame_idx:
+            self.tracker.update_tracking(self.current_frame)
 
         h, w, c = self.frames[self.current_frame].shape
         if c == 1:
@@ -63,7 +74,41 @@ class QtDemo(QtWidgets.QWidget):
         else:
             img = QtGui.QImage(self.frames[self.current_frame], w, h, QtGui.QImage.Format_RGB888)
         self.img_label.setPixmap(QtGui.QPixmap.fromImage(img))
+    
+    @QtCore.Slot()
+    def backward_click(self):
+        if self.current_frame < 10:
+            return
+        
+        self.current_frame -=10
+        self.frame_slider.setValue(self.current_frame)
+
+        # should we call update when backward is click?????
+        #self.tracker.update_tracking(self.current_frame)
+
+        h, w, c = self.frames[self.current_frame].shape
+        if c == 1:
+            img = QtGui.QImage(self.frames[self.current_frame], w, h, QtGui.QImage.Format_Grayscale8)
+        else:
+            img = QtGui.QImage(self.frames[self.current_frame], w, h, QtGui.QImage.Format_RGB888)
+        self.img_label.setPixmap(QtGui.QPixmap.fromImage(img))
+
+    @QtCore.Slot()
+    def on_click(self):
+        if self.current_frame == self.frames.shape[0]-1:
+            return
+        
         self.current_frame += 1
+        self.frame_slider.setValue(self.current_frame)
+        if self.current_frame > self.tracker.last_frame_idx:
+            self.tracker.update_tracking(self.current_frame)
+
+        h, w, c = self.frames[self.current_frame].shape
+        if c == 1:
+            img = QtGui.QImage(self.frames[self.current_frame], w, h, QtGui.QImage.Format_Grayscale8)
+        else:
+            img = QtGui.QImage(self.frames[self.current_frame], w, h, QtGui.QImage.Format_RGB888)
+        self.img_label.setPixmap(QtGui.QPixmap.fromImage(img))
 
     @QtCore.Slot()
     def on_move(self, pos):

@@ -57,6 +57,7 @@ class MotionDetector:
             if matched_obj:
                 obj.update(matched_obj.X[0:2])
                 obj.last_updated_frame = frame_idx
+                #carefull, have to switch the coordinate
                 obj.history.append(obj.region.centroid[::-1]) # keeping the previous pos of tracked object
                 obj.region = matched_obj.region
                 new_objects.remove(matched_obj)
