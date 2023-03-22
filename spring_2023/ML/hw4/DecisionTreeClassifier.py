@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import graphviz
 from Attribute import Attribute
 
 class Node():
@@ -153,7 +154,23 @@ class DecisionTreeClassifier():
                 correct += 1
         acc = correct / len(y_pred) * 100
         return acc
-
-            
-
     
+    def draw_tree(self):
+        dot = self.visualize_tree(self.root)
+        dot.render("decision tree", view=True)
+
+    def visualize_tree(self, node, dot=None):
+        if dot is None:
+            dot = graphviz.Digraph()
+            dot.attr('node', shape='circle')
+    
+        if isinstance(node, Leaf):
+            dot.node(str(id(node)), label=str(node.label), shape='rectangle')
+        else:
+            dot.node(str(id(node)), label=node.attribute.name)
+            for child in node.children:
+                child_id = id(child)
+                dot.edge(str(id(node)), str(child_id))
+                self.visualize_tree(child, dot)
+        
+        return dot
