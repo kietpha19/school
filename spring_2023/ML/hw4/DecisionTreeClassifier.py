@@ -7,6 +7,7 @@ class Node():
         self.attribute = attribute
         # list of Node object
         self.children = []
+        self.label = None # work-around way to indicate this is not a leaf
 
 class Leaf():
     def __init__(self, label):
@@ -35,7 +36,7 @@ class DecisionTreeClassifier():
 
         # Select the attribute that maximizes information gain
         best_attribute = self.select_attribute(X, y)
-        print(best_attribute.name)
+        # print(best_attribute.name)
 
         # Create a new node with the selected attribute
         node = Node(best_attribute)
@@ -115,6 +116,43 @@ class DecisionTreeClassifier():
         values, counts = np.unique(y, return_counts=True)
         probs = counts / len(y)
         return -np.sum(probs * np.log2(probs))
+    
+    def predict(self, X_test):
+        predictions = []
+
+        # Traverse the decision tree for each row in X_test
+        for _, row in X_test.iterrows():
+            node = self.root
+
+            # Traverse the tree until we reach a leaf node
+            # as long as node is a Node object
+            while isinstance(node, Node):
+                attribute = node.attribute
+                value = row[attribute.name]
+
+                if attribute.is_numeric:
+                    if value < attribute.thresh:
+                        node = node.children[0]
+                    else:
+                        node = node.children[1]
+                else:
+                    child_index = np.where(attribute.values == value)[0][0]
+                    node = node.children[child_index]
+
+            # Add the predicted label to the list of predictions
+            predictions.append(node.label)
+
+        return predictions
+
+    def accuracy(self, y_pred, y_validate):
+        y_pred = np.array(y_pred)
+        y_validate = np.array(y_validate)
+        correct = 0
+        for i in range(len(y_pred)):
+            if y_pred[i] == y_validate[i]:
+                correct += 1
+        acc = correct / len(y_pred) * 100
+        return acc
 
             
 
