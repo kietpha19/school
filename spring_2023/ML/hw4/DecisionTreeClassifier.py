@@ -22,28 +22,28 @@ class DecisionTreeClassifier():
         
     # X, y are DataFrame object
     def fit(self, X, y):
-        self.root = self.build_tree(X,y)
+        self.root = self.build_tree(X,y, self.attributes.copy())
 
     # X, y are DataFrame object
-    def build_tree(self, X, y):
+    def build_tree(self, X, y, attributes):
         # If all samples have the same target value, return a leaf node
         if len(y.unique()) == 1:
             return Leaf(label=y.iloc[0])
 
         # If there are no attributes left to split on, return a leaf node with the most common target value
-        if len(self.attributes) == 0:
+        if len(attributes) == 0:
             most_common_label = y.mode().iloc[0]
             return Leaf(label=most_common_label)
 
         # Select the attribute that maximizes information gain
-        best_attribute = self.select_attribute(X, y)
+        best_attribute = self.select_attribute(X, y, attributes)
         # print(best_attribute.name)
 
         # Create a new node with the selected attribute
         node = Node(best_attribute)
         
         # Remove the picked attribute out of attibutes list
-        self.attributes.remove(best_attribute)
+        attributes.remove(best_attribute)
 
         # Split the data based on the selected attribute
         if node.attribute.is_numeric:
@@ -55,8 +55,14 @@ class DecisionTreeClassifier():
             y_right = y.loc[X[node.attribute.name] >= thresh]
 
             # Recursively build the left and right subtrees
-            node.children.append(self.build_tree(X_left, y_left))
-            node.children.append(self.build_tree(X_right, y_right))
+            if len(X_left) == 0:
+                node.children.append(Leaf(label=y.mode().iloc[0]))
+            else:
+                node.children.append(self.build_tree(X_left, y_left, attributes.copy()))
+            if len(X_right) == 0:
+                node.children.append(Leaf(label=y.mode().iloc[0]))
+            else:
+                node.children.append(self.build_tree(X_right, y_right, attributes.copy()))
         else:
             # Nominal attribute: split the data based on the attribute values
             values = node.attribute.values
@@ -69,15 +75,15 @@ class DecisionTreeClassifier():
                     most_common_label = y.mode().iloc[0]
                     node.children.append(Leaf(label=most_common_label))
                 else:
-                    node.children.append(self.build_tree(X_subset, y_subset))
+                    node.children.append(self.build_tree(X_subset, y_subset, attributes.copy()))
 
         return node
 
-    def select_attribute(self, X, y):
+    def select_attribute(self, X, y, attributes):
         max_gain = -np.inf
         best_attribute = None
 
-        for attribute in self.attributes:
+        for attribute in attributes:
             gain = self.information_gain(attribute, X[attribute.name], y)
             if gain > max_gain:
                 max_gain = gain
@@ -104,7 +110,8 @@ class DecisionTreeClassifier():
             H_yx = len(y_left) / len(y) * H_yx_left + len(y_right) / len(y) * H_yx_right
         
         else:
-            values = attribute.get_values(data)
+            # values = attribute.get_values(data)
+            values = np.unique(data)
             H_yx = 0
             for value in values:
                 # data_subset = data.loc[data[attribute.name] == value]
@@ -155,11 +162,15 @@ class DecisionTreeClassifier():
         acc = correct / len(y_pred) * 100
         return acc
     
-    def draw_tree(self):
-        dot = self.visualize_tree(self.root)
-        dot.render("decision tree", view=True)
+    def draw_tree(self, max_depth=10):
+        dot = self.visualize_tree(self.root, dot=None, depth=0, max_depth=max_depth)
+        print("finished visualize, rendering ....")
+        dot.render("decision_tree", view=True)
 
-    def visualize_tree(self, node, dot=None):
+    def visualize_tree(self, node, dot=None, depth=0, max_depth=10):
+        if depth == max_depth:
+            return dot
+        
         if dot is None:
             dot = graphviz.Digraph()
             dot.attr('node', shape='circle')
@@ -171,6 +182,6 @@ class DecisionTreeClassifier():
             for child in node.children:
                 child_id = id(child)
                 dot.edge(str(id(node)), str(child_id))
-                self.visualize_tree(child, dot)
+                self.visualize_tree(child, dot, depth=depth+1, max_depth=max_depth)
         
         return dot

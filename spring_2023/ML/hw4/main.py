@@ -48,14 +48,14 @@ def main():
             X_test[c] = X_test[c].fillna(np.mean(X_test[c].astype('float64')))
             X_validate[c] = X_validate[c].fillna(np.mean(X_test[c].astype('float64')))
             # print(X_train[c].unique())
-            attriutes.append(Attribute(name=c, is_numeric=True))
+            attriutes.append(Attribute(name=c, is_numeric=True, data=None))
         else:
             # fill missing value of nominal attribute with the most frequent value
             X_train[c] = X_train[c].fillna(X_train[c].mode()[0])
             X_test[c] = X_test[c].fillna(X_test[c].mode()[0])
             X_validate[c] = X_validate[c].fillna(X_test[c].mode()[0])
             # print(X_train[c].unique())
-            attriutes.append(Attribute(name=c, is_numeric=False))
+            attriutes.append(Attribute(name=c, is_numeric=False, data=X_train[c]))
     
     dtc = DecisionTreeClassifier(attributes=attriutes)
     dtc.fit(X_train, y_train)
@@ -69,7 +69,10 @@ def main():
     # use the validate dataset to calculate the accuracy
     y_pred = dtc.predict(X_validate)
     accuracy = dtc.accuracy(y_pred, y_validate)
-    print(accuracy)
+    print("accuracy = ", accuracy)
+
+    # draw tree
+    dtc.draw_tree()
 
 if __name__ == "__main__":
     main()
