@@ -8,6 +8,8 @@ max_iters = 100
 
 def plot(clusters, centroids, k, round):
     fig = plt.figure()
+    plt.title("KMeans")
+    plt.axis('off')
     fig.text(0.85, 0.9, "k=" + str(k), fontsize=10, color='red')
     fig.text(0.85, 0.8, "round: " + str(round), fontsize=10, color='red')
     ax = fig.add_subplot(projection='3d')
@@ -27,7 +29,8 @@ def plot(clusters, centroids, k, round):
             # Plot the data points in the current cluster with a color corresponding to the label
             ax.scatter(x[0], x[1], x[2], c=colors[i], s=1)
 
-    plt.savefig("output.pdf")
+    #plt.savefig("output.pdf")
+    plt.show()
 
 
 # in this implementation, we keep track of clusters for visualize purpose
@@ -66,8 +69,8 @@ def KMeans(datasetFile, k=2):
         prev_centroids = centroids
         centroids = [np.mean(c, axis=0) for c in clusters]
 
-        # if i==0:
-        #     plot(clusters, centroids, k, i+1)
+        if i==0:
+            plot(clusters, centroids, k, i+1)
 
         # check if all the means are converges
         # np.allchose check if two vectors are very close to some tolerant
@@ -76,7 +79,8 @@ def KMeans(datasetFile, k=2):
 
     return clusters, centroids
 
-clusters, centroids, round = KMeans("ClusteringData.txt", 4)
-#plot(clusters, centroids, 4, round)
+k = 4
+clusters, centroids, round = KMeans("ClusteringData.txt", k)
+plot(clusters, centroids, k, round)
 
 

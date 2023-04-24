@@ -7,6 +7,8 @@ tol = 1e-4 #tolerant threshold
 
 def plot(clusters, centroids, k, round):
     fig = plt.figure()
+    plt.title("EM")
+    plt.axis('off')
     fig.text(0.85, 0.9, "k=" + str(k), fontsize=10, color='red')
     fig.text(0.85, 0.8, "round: " + str(round), fontsize=10, color='red')
     ax = fig.add_subplot(projection='3d')
@@ -26,7 +28,7 @@ def plot(clusters, centroids, k, round):
             # Plot the data points in the current cluster with a color corresponding to the label
             ax.scatter(x[0], x[1], x[2], c=colors[i], s=1)
 
-    plt.savefig("output.pdf")
+    plt.show()
 
 def initialize_parameters(data, k):
     # Initialize each μ_i to a random value
@@ -82,12 +84,11 @@ def EM(datasetFile, k=2):
             cluster_idx = np.argmax(responsibilities[j])
             clusters[cluster_idx].append(data[j])
 
-        # if i==0:
-        #     plot(clusters, centroids, k, i+1)
+        if i==0:
+            plot(clusters, centroids, k, i+1)
 
         # Check for convergence
         if log_likelihood - last_log_likelihood < tol:
-            print(i)
             return clusters, centroids, i
 
         # Update last log likelihood
@@ -96,7 +97,8 @@ def EM(datasetFile, k=2):
     # return centroids, covariances, weights, responsibilities #use this when we need to predict new data later
     return clusters, centroids, i
 
-clusters, centroids, round = EM("ClusteringData.txt", 6)
-#plot(clusters, centroids, 6, round)
+k = 4
+clusters, centroids, round = EM("ClusteringData.txt", k)
+plot(clusters, centroids, k, round)
 
 
